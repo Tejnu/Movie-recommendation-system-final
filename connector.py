@@ -1,104 +1,72 @@
-from flask import Flask, render_template, request, jsonify
-import re
-import os
-import pickle
+import joblib
 import pandas as pd
-import tensorflow as tf  # For loading .keras model
+from flask import Flask, render_template, request, jsonify
+import numpy as np
+
+# Load pre-trained models (make sure you have saved your models as .pkl files)
+scaler = joblib.load('scaler.pkl')  # Load feature scaler if needed
+model = joblib.load('model.pkl')  # Load your recommendation model (replace recommendation_model.pkl with model.pkl)
 
 # Initialize Flask app
-app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
+app = Flask(__name__)
 
-# Path to your dataset and model file
-DATASET_PATH = os.path.join(os.getcwd(), 'path_to_your_dataset', 'movies.csv')  # Replace with your dataset path
-MODEL_PATH = os.path.join(os.getcwd(), 'path_to_your_model', 'model.keras')  # Replace with your .keras model path
-TFIDF_PATH = os.path.join(os.getcwd(), 'path_to_your_tfidf', 'tfidf_vectorizer.pkl')  # Replace with actual path
-
-# Use raw strings to handle backslashes in file paths
-movies_data = pd.read_csv(r"D:\neceties\projects\Movie-recommendation-system-final\movies.csv")
-recommendation_model = tf.keras.models.load_model(r"D:\neceties\projects\Movie-recommendation-system-final\my_model.keras")
-
-# Ensure the TFIDF file path is correct
-TFIDF_PATH = r"D:\neceties\projects\Movie-recommendation-system-final\path_to_your_tfidf\tfidf_vectorizer.pkl"
-
-# Open the TFIDF vectorizer file
-with open(TFIDF_PATH, 'rb') as file:
-    tfidf_vectorizer = pickle.load(file)
-
-# Route for the home page
 @app.route('/')
-def index():
-    return render_template('frontpage.html')  # Ensure 'frontpage.html' is in the 'templates' folder
+def home():
+    return render_template('frontend.html')  # Serve the HTML page for the recommendation form
 
-# Route to validate SQL query and recommend movies
-@app.route('/validate', methods=['POST'])
-def validate_query():
-    query = request.json.get('query')
-    result = {}
+@app.route('/predict', methods=['POST'])
+def predict():
+    if request.method == 'POST':
+        movie_name = request.form['movie']  # Get the movie name input from the form
+        
+        # Here you would use your recommendation model to get predictions for the input movie_name
+        recommendations = get_movie_recommendations(movie_name)
 
-    # Basic SQL Injection validation pattern (for demonstration)
-    sql_injection_pattern = re.compile(r"(union|select|drop|--|#|\*|insert|update|delete|;|\\)", re.IGNORECASE)
+        return render_template('frontend.html', recommendations=recommendations, movie_name=movie_name)
 
-    if sql_injection_pattern.search(query):
-        result['safe'] = False
-        result['message'] = 'SQL Injection Detected!'
-        result['dl_score'] = 0.1  # You can adjust this with real model score
-    else:
-        result['safe'] = True
-        result['message'] = 'SQL Query is Safe.'
-        result['dl_score'] = 0.9  # You can adjust this with real model score
-
-    return jsonify(result)
-
-# Route to get movie recommendations
 @app.route('/recommend', methods=['POST'])
-def recommend_movies():
-    """
-    Endpoint to recommend movies based on user input.
-    Expected input (JSON):
-    {
-        "movie_name": "The Matrix"
-    }
-    """
-    user_movie = request.json.get('movie_name')  # Replace 'movie_name' based on your request structure
-    if not user_movie:
-        return jsonify({"error": "No movie name provided"}), 400
-
+def recommend():
+    # API endpoint to receive POST request and return movie recommendations as JSON
     try:
-        # Preprocess user input using the TF-IDF vectorizer
-        input_data = preprocess_input(user_movie)
+        data = request.get_json()
+        movie_name = data.get('movie', '')  # Extract the movie name from JSON request
 
-        # Get predictions from the model
-        predictions = recommendation_model.predict(input_data)
+        # Generate recommendations for the given movie name
+        recommendations = get_movie_recommendations(movie_name)
 
-        # Get movie recommendations based on predictions
-        recommended_movies = get_recommendations(predictions, movies_data)
+        # Format the recommendations as a JSON response
+        response = {
+            'success': True,
+            'recommendations': recommendations
+        }
 
-        return jsonify({"recommendations": recommended_movies})
-
+        return jsonify(response)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)})
 
-# Define preprocessing function
-def preprocess_input(movie_name):
-    """
-    Transforms the user movie name into a TF-IDF vector.
-    """
-    if not movie_name:
-        raise ValueError("Movie name cannot be empty.")
-    return tfidf_vectorizer.transform([movie_name])
+def get_movie_recommendations(movie_name):
+    # Here you will call your recommendation model to generate predictions
+    # This is where you'd integrate your logic to query the model
 
-# Define recommendation mapping function
-def get_recommendations(predictions, dataset):
-    """
-    Maps model predictions to movie recommendations.
-    """
-    # Get the top 10 movie indices based on predictions
-    sorted_indices = predictions.flatten().argsort()[::-1][:10]
+    # For illustration, assume we query the model and get the top 5 recommendations
+    # Replace the logic with actual code that fetches recommendations
+    try:
+        # Simulated logic for demo (Replace this with actual model querying logic)
+        # For example, if using collaborative filtering, you would process the `movie_name`
+        # and get similar movies using your model and scaling if necessary
+        movie_data = pd.read_csv('movies.csv')  # Your dataset of movies
 
-    # Fetch movie details for these indices
-    recommended_movies = dataset.iloc[sorted_indices].to_dict(orient='records')
+        # This is a placeholder for actual recommendation logic
+        similar_movies = movie_data[movie_data['title'].str.contains(movie_name, case=False)]
 
-    return recommended_movies
+        if not similar_movies.empty:
+            recommendations = similar_movies.head(5).to_dict(orient='records')
+        else:
+            recommendations = []
+
+        return recommendations
+    except Exception as e:
+        return [{"error": str(e)}]
 
 if __name__ == '__main__':
     app.run(debug=True)
