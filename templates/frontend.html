@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1c1c1c, #3c3c3c); /* Classy dark gradient */
+            color: #f5f5f5; /* Light gray for text */
+        }
+        nav {
+            background: #2b2b2b; /* Dark gray for the navbar */
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37; /* Gold for branding */
+        }
+        .section {
+            max-width: 800px;
+            margin: 120px auto 0;
+            background: rgba(43, 43, 43, 0.9); /* Slightly transparent dark gray */
+            padding: 30px;
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4); /* Strong shadow for depth */
+        }
+        h1 {
+            text-align: center;
+            color: #d4af37; /* Gold for headings */
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #1c1c1c; /* Dark black for input */
+            border: 2px solid #d4af37; /* Gold border */
+            border-radius: 30px; /* Fully rounded edges */
+            color: #f5f5f5; /* Light gray for text */
+            margin-bottom: 20px;
+            font-size: 16px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            outline: none;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input:focus {
+            transform: scale(1.02); /* Slight zoom effect */
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #d4af37, #b8860b); /* Gold gradient for the button */
+            border: none;
+            border-radius: 30px; /* Fully rounded edges */
+            color: #1c1c1c; /* Black for text on the button */
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        button:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4); /* Deeper shadow on hover */
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(60, 60, 60, 0.9); /* Slightly transparent gray */
+            color: #f5f5f5; /* Light gray for text */
+        }
+        .movie-details {
+            background: #444444; /* Solid gray for movie details */
+            color: #d4af37; /* Gold for text */
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+        .recommendation {
+            background: #2b2b2b; /* Dark gray for recommendations */
+            color: #f5f5f5; /* Light gray for text */
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #2b2b2b; /* Match the navbar */
+            color: #d4af37; /* Gold text for footer */
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">Movie Recommendation System</div>
+        </div>
+    </nav>
+
+    <!-- Movie Recommendation Section -->
+    <div class="section">
+        <h1>Find Your Next Favorite Movie</h1>
+        <form action="/predict" method="POST">
+            <input type="text" name="movie" placeholder="Enter a movie name..." required>
+            <button type="submit">Get Recommendations</button>
+        </form>
+
+        {% if recommendations %}
+            <div class="result">
+                <h2>Top Recommendations for "{{ movie_name }}"</h2>
+                <div class="movie-details">
+                    <h3>Recommended Movies:</h3>
+                    <ul>
+                        {% for rec in recommendations %}
+                            <li class="recommendation">
+                                <strong>{{ rec['title'] }}</strong><br>
+                                <em>Vote Average:</em> {{ rec['vote_average'] }}<br>
+                                <em>Vote Count:</em> {{ rec['vote_count'] }}<br>
+                                <em>Similarity Score:</em> {{ rec['similarity_score'] }}<br>
+                                <em>Final Score:</em> {{ rec['final_score'] }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        &copy; 2024 Movie Recommendations | Designed with Elegance
+    </footer>
+</body>
+</html>
