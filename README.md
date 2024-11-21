@@ -6,7 +6,7 @@
 2. [VSCode](https://code.visualstudio.com)
 3. [Heroku](https://heroku.com)
 
-##Technologies Used
+## Technologies Used
 1.Python
 2.Flask (for deployment)
 3.Pandas, NumPy, Scikit-learn (for preprocessing and modeling)
