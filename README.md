@@ -12,10 +12,10 @@
 3.Pandas, NumPy, Scikit-learn (for preprocessing and modeling)
 4.Jupyter Notebook (for development)
 
-##Dataset
+## Dataset
 The system uses a movie dataset (movies.csv) containing features like genres, keywords, tagline, cast, and director.
 
-##Features:
+## Features:
 1.Content-Based Filtering: Recommends movies based on similarities in features like genres, keywords, tagline, cast, and director.
 2.  Collaborative Filtering:Suggests movies based on the preferences of similar users.
 3. Interactive Recommendation Retrieval: Users can input a movie and
