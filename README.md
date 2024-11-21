@@ -1,23 +1,9 @@
-# Movie-recommendation-system-final
-
 ## software and tools required
 
 1. [Github](https://github.com)
 2. [VSCode](https://code.visualstudio.com)
 3. [Heroku](https://heroku.com)
-
-## Technologies Used
-1.Python
-2.Flask (for deployment)
-3.Pandas, NumPy, Scikit-learn (for preprocessing and modeling)
-4.Jupyter Notebook (for development)
-
-## Dataset
-The system uses a movie dataset (movies.csv) containing features like genres, keywords, tagline, cast, and director.
-
-
-
-
+   
 # Movie Recommendation System  
 
 📋 **Overview**  
@@ -28,6 +14,10 @@ The **Movie Recommendation System** is a Python-based application powered by Mac
 - **Content-Based Filtering**: Utilizes movie features like genres, keywords, cast, and director for recommendations.  
 - **Collaborative Filtering**: Suggests movies based on user behavior patterns.  
 - **Data Insights**: Includes genre distribution, runtime distribution, and other visualizations for exploratory analysis.  
+
+**Dataset**
+The system uses a movie dataset (movies.csv) containing features like genres, keywords, tagline, cast, and director.
+
 
 🛠️ **Technologies Used**  
 
